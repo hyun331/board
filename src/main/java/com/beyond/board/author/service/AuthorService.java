@@ -2,8 +2,8 @@ package com.beyond.board.author.service;
 
 import com.beyond.board.author.domain.Author;
 import com.beyond.board.author.dto.AuthorDetResDto;
-import com.beyond.board.author.dto.AuthorReqDto;
-import com.beyond.board.author.dto.AuthorResDto;
+import com.beyond.board.author.dto.AuthorSaveReqDto;
+import com.beyond.board.author.dto.AuthorListResDto;
 import com.beyond.board.author.repository.AuthorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+//조회 작업시 readOnly 설정하면 성능 향상
+//다만 저장 작업 시 @transcational 필요
+@Transactional(readOnly = true)
 public class AuthorService {
     private final AuthorRepository authorRepository;
 
@@ -21,29 +23,39 @@ public class AuthorService {
         this.authorRepository = authorRepository;
     }
 
-    public void createAuthor(AuthorReqDto authorReqDto){
+    @Transactional
+    public Author createAuthor(AuthorSaveReqDto authorReqDto){
         if(authorRepository.findByEmail(authorReqDto.getEmail()).isPresent()){
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new IllegalArgumentException("이미 존재하는 email 입니다.");
         }
-        Author newAuthor = authorReqDto.toEntity();
+        Author author = authorReqDto.toEntity();
+        Author savedAuthor = authorRepository.save(author);
+        return savedAuthor;
 
-        authorRepository.save(newAuthor);
+//
 
     }
 
-    public List<AuthorResDto> showAuthorList() {
+    public List<AuthorListResDto> authorList() {
         List<Author> authorList = authorRepository.findAll();
-        List<AuthorResDto> authorResDtoList = new ArrayList<>();
+        List<AuthorListResDto> authorListResDtoList = new ArrayList<>();
         for(Author author : authorList){
-            authorResDtoList.add(author.fromEntity());
+            authorListResDtoList.add(author.fromEntity());
         }
-        return authorResDtoList;
+        return authorListResDtoList;
     }
 
     public AuthorDetResDto showAuthorDetail(Long id) {
-        Author author = authorRepository.findById(id).orElseThrow(()->new EntityNotFoundException());
-        AuthorDetResDto authorDetResDto = author.detFromEntity();
+        Author author = authorRepository.findById(id).orElseThrow(()->new EntityNotFoundException("member isn;'t found"));
+        AuthorDetResDto authorDetResDto = new AuthorDetResDto();
 
-        return authorDetResDto;
+        //Author에 있던 fromEntity를 바꿈
+        return authorDetResDto.fromEntity(author);
+    }
+
+
+    public Author authorFindByEmail(String email){
+        Author author = authorRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("해당 email의 사용자는 없습니다."));
+        return author;
     }
 }

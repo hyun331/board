@@ -2,52 +2,88 @@ package com.beyond.board.author.controller;
 
 import com.beyond.board.author.domain.Author;
 import com.beyond.board.author.dto.AuthorDetResDto;
-import com.beyond.board.author.dto.AuthorReqDto;
-import com.beyond.board.author.dto.AuthorResDto;
+import com.beyond.board.author.dto.AuthorSaveReqDto;
+import com.beyond.board.author.dto.AuthorListResDto;
 import com.beyond.board.author.service.AuthorService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/author")
 public class AuthorController {
 
     private final AuthorService authorService;
 
+
+
+    @Autowired
     public AuthorController(AuthorService authorService){
         this.authorService = authorService;
     }
 
-    @PostMapping("/create")
-    public String createAuthor(@RequestBody AuthorReqDto authorReqDto){
-        try{
-            authorService.createAuthor(authorReqDto);
-        }catch (IllegalArgumentException e){
-            e.printStackTrace();
-        }
-        return "ok";
+    @GetMapping("/register")
+    public String authoRegisterView(){
+        return "author/author_register";
     }
+//rest api
+//    @PostMapping("/create")
+//    public String authorCreate(@RequestBody AuthorSaveReqDto dto){
+//
+//        Author author = authorService.createAuthor(dto);
+//        return author.getId()+"번 회원가입 완료";
+//    }
+
+    @PostMapping("/create")
+    public String authorCreate(AuthorSaveReqDto dto){
+
+        Author author = authorService.createAuthor(dto);
+        return "redirect:/author/list";
+    }
+
+
+    //Rest api일때
+//    @GetMapping("/list")
+//    public List<AuthorListResDto> showAuthorList(){
+//        return authorService.authorList();
+//    }
 
     @GetMapping("/list")
-    public List<AuthorResDto> showAuthorList(){
-        List<AuthorResDto> authorResDtoListList = authorService.showAuthorList();
-        return authorResDtoListList;
+    public String showAuthorList(Model model){
+        model.addAttribute("authorList", authorService.authorList());
+        return "author/author_list";
     }
 
+    //rest일 때
+//    @GetMapping("/detail/{id}")
+//    public AuthorDetResDto showAuthorDetail(@PathVariable Long id){
+//        AuthorDetResDto authorDetResDto = null;
+//        try{
+//            authorDetResDto = authorService.showAuthorDetail(id);
+//
+//        }catch(EntityNotFoundException e){
+//            e.printStackTrace();
+//
+//        }
+//        return authorDetResDto;
+//
+//    }
+
     @GetMapping("/detail/{id}")
-    public AuthorDetResDto showAuthorDetail(@PathVariable Long id){
+    public String showAuthorDetail(@PathVariable Long id, Model model){
         AuthorDetResDto authorDetResDto = null;
         try{
-            authorDetResDto = authorService.showAuthorDetail(id);
+            model.addAttribute("author", authorService.showAuthorDetail(id));
 
         }catch(EntityNotFoundException e){
             e.printStackTrace();
 
         }
-        return authorDetResDto;
+        return "author/author_detail";
 
     }
 }

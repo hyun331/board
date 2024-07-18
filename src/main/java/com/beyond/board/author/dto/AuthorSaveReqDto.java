@@ -9,13 +9,21 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorReqDto {
+public class AuthorSaveReqDto {
     private String name;
     private String email;
     private String password;
+    //사용자가 String으로 요청해도 Role클래스로 자동형변환
     private Role role;
 
     public Author toEntity() {
-        return new Author(this.name, this.email, this.password, this.role);
+        Author author = Author.builder()
+                .password(this.password)
+                .name(this.name)
+                .email(this.email)
+                .role(this.role)
+                .build();
+
+        return author;
     }
 }
