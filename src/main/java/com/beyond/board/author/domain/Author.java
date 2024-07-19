@@ -2,6 +2,7 @@ package com.beyond.board.author.domain;
 
 import com.beyond.board.author.dto.AuthorDetResDto;
 import com.beyond.board.author.dto.AuthorListResDto;
+import com.beyond.board.author.dto.AuthorUpdateDto;
 import com.beyond.board.common.BaseEntity;
 import com.beyond.board.post.domain.Post;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -37,8 +39,9 @@ public class Author extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    //일반적으로 부모 엔티티에 cascade옵션을 설정(영향을 줄 수 있는게 부모)
     //Post의 author 변수와 연결됨
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Post> posts;
 
     public Author(String name, String email, String password, Role role) {
@@ -58,4 +61,8 @@ public class Author extends BaseEntity {
     }
 
 
+    public void updateAuthor(AuthorUpdateDto authorUpdateDto) {
+        this.name = authorUpdateDto.getName();
+        this.password = authorUpdateDto.getPassword();
+    }
 }

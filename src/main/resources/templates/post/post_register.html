@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th = http://www.thymeleaf.org>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +8,17 @@
 
 </head>
 <body>
-    <object style="width: 100%;" data="../common/header.html" type="text/html"></object>
+    <div th:replace="common/header :: headerFragment"></div>
 
      <div class="container">
         <div class="page-header"><h3>글쓰기</h3></div>
-        <form action="http://localhost:8081/post/register2" method="post" enctype="application/x-www-form-urlencoded">
+        <form action="/post/create" method="post" enctype="application/x-www-form-urlencoded">
+
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="text" class="form-control" name="email" id="email">
+            </div>
+
             <div class="form-group">
                 <label for="title">제목</label>
                 <input type="text" class="form-control" name="title" id="title">

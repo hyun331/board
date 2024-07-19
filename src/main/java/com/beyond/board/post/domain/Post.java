@@ -4,6 +4,7 @@ import com.beyond.board.author.domain.Author;
 import com.beyond.board.common.BaseEntity;
 import com.beyond.board.post.dto.PostDetResDto;
 import com.beyond.board.post.dto.PostListResDto;
+import com.beyond.board.post.dto.PostUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class Post extends BaseEntity {
     @Column(length = 3000)
     private String contents;
 
-    @ManyToOne
+    //연관관계의 주인은 fk가 있는 post
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id") //외래키로 지정할거면 작성해야함
     private Author author;
 
@@ -55,4 +57,9 @@ public class Post extends BaseEntity {
     }
 
 
+    public void updatePost(PostUpdateDto dto) {
+
+        this.title = dto.getTitle();
+        this.contents = dto.getContents();
+    }
 }

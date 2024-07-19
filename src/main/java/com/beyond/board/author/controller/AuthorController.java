@@ -4,6 +4,7 @@ import com.beyond.board.author.domain.Author;
 import com.beyond.board.author.dto.AuthorDetResDto;
 import com.beyond.board.author.dto.AuthorSaveReqDto;
 import com.beyond.board.author.dto.AuthorListResDto;
+import com.beyond.board.author.dto.AuthorUpdateDto;
 import com.beyond.board.author.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -85,5 +86,19 @@ public class AuthorController {
         }
         return "author/author_detail";
 
+    }
+
+    //원래는 DeleteMapping 인데 지금 구현하기 복잡해서 GetMapping으로만 처리
+    @GetMapping("/delete/{id}")
+    public String authorDelete(@PathVariable Long id){
+        authorService.delete(id);
+        return "redirect:/author/list";
+    }
+
+
+    @PostMapping("/update/{id}")
+    public String authorUpdate(@PathVariable Long id, AuthorUpdateDto authorUpdateDto){
+        authorService.update(id, authorUpdateDto);
+        return "redirect:/author/detail/"+id;
     }
 }

@@ -6,6 +6,7 @@ import com.beyond.board.post.domain.Post;
 import com.beyond.board.post.dto.PostDetResDto;
 import com.beyond.board.post.dto.PostListResDto;
 import com.beyond.board.post.dto.PostSaveReqDto;
+import com.beyond.board.post.dto.PostUpdateDto;
 import com.beyond.board.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class PostService {
 
     }
     public List<PostListResDto> postList(){
-        List<Post> postList = postRepository.findAll();
+        List<Post> postList = postRepository.findAllFetch();
         List<PostListResDto> postResDtoList = new ArrayList<>();
         for(Post p : postList){
             postResDtoList.add(p.listFromEntity());
@@ -56,4 +57,9 @@ public class PostService {
     }
 
 
+    public void updatePost(Long id, PostUpdateDto dto) {
+        Post post = postRepository.findById(id).orElseThrow(()->new EntityNotFoundException("post is not found"));
+        post.updatePost(dto);
+        postRepository.save(post);
+    }
 }
