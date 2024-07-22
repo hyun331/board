@@ -30,6 +30,15 @@
                 <textarea name="contents" class="form-control" id="contents" rows="10" maxlength="800" placeholder="글 입력하세요" ></textarea>
             </div>
             <br>
+            <div>
+                <label>예약 여부</label>
+                <input type="radio" name="appointment" value="Y">YES
+                <input type="radio" name="appointment" value="N" checked>NO
+
+                <label>예약 시간</label>
+                <input type="datetime-local" name="appointmentTime">
+            </div>
+            <br>
             <button type="submit" class="btn btn-secondary float-end">제출</button>
         </form>
         

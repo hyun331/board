@@ -6,6 +6,10 @@ import com.beyond.board.post.dto.PostSaveReqDto;
 import com.beyond.board.post.dto.PostUpdateDto;
 import com.beyond.board.post.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -44,9 +48,23 @@ public class PostController {
 //        return postService.postList();
 //    }
     //mvc
+//    @GetMapping("/list")
+//    public String showPostList(Model model){
+//        model.addAttribute("postList", postService.postList());
+//        return "post/post_list";
+//    }
+
+    //페이징 처리 rest api방식
+    @GetMapping("/list/page")
+    @ResponseBody
+    //Pageable 요청 방법 : localhost:8080/post/list?size=10&page=0    size, page가 Pageable 객체에 바인딩
+    public Page<PostListResDto> postListTest(@PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable){
+        return postService.postListPage(pageable);
+    }
+    //페이징 처리 mvc 방식
     @GetMapping("/list")
-    public String showPostList(Model model){
-        model.addAttribute("postList", postService.postList());
+    public String showPostList(Model model, @PageableDefault(size=10, sort="createdTime", direction = Sort.Direction.DESC) Pageable pageable){
+        model.addAttribute("postList", postService.postListPage(pageable));
         return "post/post_list";
     }
 

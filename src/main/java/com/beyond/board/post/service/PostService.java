@@ -9,9 +9,13 @@ import com.beyond.board.post.dto.PostSaveReqDto;
 import com.beyond.board.post.dto.PostUpdateDto;
 import com.beyond.board.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +42,19 @@ public class PostService {
 
     public Post postCreate(PostSaveReqDto dto){
         Author author = authorService.authorFindByEmail(dto.getEmail());
-        Post post = postRepository.save(dto.toEntity(author));
+        String appointment = null;
+        LocalDateTime appointmentTime = null;
+        System.out.println(dto);
+        if(dto.getAppointment().equals("Y") && !dto.getAppointmentTime().isEmpty()){
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            appointmentTime = LocalDateTime.parse(dto.getAppointmentTime(), dateTimeFormatter);
+            LocalDateTime now = LocalDateTime.now();
+            if(appointmentTime.isBefore(now)){
+                throw new IllegalArgumentException("시간 입력이 잘못되었습니다.");
+            }
+        }
+
+        Post post = postRepository.save(dto.toEntity(author, appointmentTime));
         return post;
 
     }
@@ -49,6 +65,17 @@ public class PostService {
             postResDtoList.add(p.listFromEntity());
         }
         return postResDtoList;
+    }
+
+
+
+    //Page는 리스트로 안해도 됨. 알아서 내부적으로 리스트형태로 해줌
+    public Page<PostListResDto> postListPage(Pageable pageable) {
+        //findAll의 리턴타입을 Page<>로 재정의 해야 함 -> postRepository에서
+        Page<Post> posts = postRepository.findByAppointment(pageable, "N");
+        Page<PostListResDto> postListResDtos = posts.map(a->a.listFromEntity());    //Post객체 -> DTO로 변환
+        return postListResDtos;
+
     }
 
     public PostDetResDto postDetail(Long id) {
@@ -62,4 +89,8 @@ public class PostService {
         post.updatePost(dto);
         postRepository.save(post);
     }
+
+
 }
+
+

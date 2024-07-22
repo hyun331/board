@@ -35,6 +35,10 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "author_id") //외래키로 지정할거면 작성해야함
     private Author author;
 
+    private String appointment;
+    private LocalDateTime appointmentTime;
+
+
 
     public PostListResDto listFromEntity(){
         return PostListResDto
@@ -61,5 +65,9 @@ public class Post extends BaseEntity {
 
         this.title = dto.getTitle();
         this.contents = dto.getContents();
+    }
+
+    public void changeAppointment(String yn){
+        this.appointment = yn;
     }
 }
