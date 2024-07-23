@@ -30,6 +30,9 @@ public class AuthorService {
         if(authorRepository.findByEmail(authorReqDto.getEmail()).isPresent()){
             throw new IllegalArgumentException("이미 존재하는 email 입니다.");
         }
+        if(authorReqDto.getPassword().length()<8){
+            throw new IllegalArgumentException("password too short");
+        }
         Author author = authorReqDto.toEntity();
         //여기 코드엔 post객체를 db에 저장하는 코드가 없음.
         //casecade.persist가 해줌
@@ -51,7 +54,7 @@ public class AuthorService {
     }
 
     public AuthorDetResDto showAuthorDetail(Long id) {
-        Author author = authorRepository.findById(id).orElseThrow(()->new EntityNotFoundException("member isn;'t found"));
+        Author author = authorRepository.findById(id).orElseThrow(()->new EntityNotFoundException("member isn't found"));
         AuthorDetResDto authorDetResDto = new AuthorDetResDto();
 
         //Author에 있던 fromEntity를 바꿈
@@ -79,8 +82,6 @@ public class AuthorService {
         //jpa가 특정 엔티티의 변경을 자동으로 인지하고 변경사항을 db에 반영하는 것이 dirtychecking(변경감지)
         //즉 save안해줘도 됨.
 //        authorRepository.save(author);
-
-
 
     }
 }

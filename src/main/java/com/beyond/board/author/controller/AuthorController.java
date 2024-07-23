@@ -6,6 +6,7 @@ import com.beyond.board.author.dto.AuthorSaveReqDto;
 import com.beyond.board.author.dto.AuthorListResDto;
 import com.beyond.board.author.dto.AuthorUpdateDto;
 import com.beyond.board.author.service.AuthorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/author")
+@Slf4j
 public class AuthorController {
 
     private final AuthorService authorService;
@@ -77,13 +79,20 @@ public class AuthorController {
     @GetMapping("/detail/{id}")
     public String showAuthorDetail(@PathVariable Long id, Model model){
         AuthorDetResDto authorDetResDto = null;
-        try{
-            model.addAttribute("author", authorService.showAuthorDetail(id));
+//        try{
+//            model.addAttribute("author", authorService.showAuthorDetail(id));
+//
+//        }catch(EntityNotFoundException e){
+//            e.printStackTrace();
+//            log.error(id+e.getMessage()); //이렇게 log에 남겨주기. 근데 예외 공통처리할거라 주석처리
+//
+//        }
+//
+//        log.info("get request. parameter : "+id);
+//        log.info("method : showAuthorDetail");
 
-        }catch(EntityNotFoundException e){
-            e.printStackTrace();
+        model.addAttribute("author", authorService.showAuthorDetail(id));
 
-        }
         return "author/author_detail";
 
     }
