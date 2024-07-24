@@ -7,6 +7,7 @@ import com.beyond.board.author.dto.AuthorListResDto;
 import com.beyond.board.author.dto.AuthorUpdateDto;
 import com.beyond.board.author.repository.AuthorRepository;
 import com.beyond.board.post.domain.Post;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +21,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class AuthorService {
     private final AuthorRepository authorRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthorService(AuthorRepository authorRepository){
+    public AuthorService(AuthorRepository authorRepository, PasswordEncoder passwordEncoder){
         this.authorRepository = authorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
 
     @Transactional
     public Author createAuthor(AuthorSaveReqDto authorReqDto){
@@ -33,10 +37,11 @@ public class AuthorService {
         if(authorReqDto.getPassword().length()<8){
             throw new IllegalArgumentException("password too short");
         }
-        Author author = authorReqDto.toEntity();
+        System.out.println("회원가입");
+        Author author = authorReqDto.toEntity(passwordEncoder.encode(authorReqDto.getPassword()));
         //여기 코드엔 post객체를 db에 저장하는 코드가 없음.
         //casecade.persist가 해줌
-        author.getPosts().add(Post.builder().author(author).title("가입인사").contents("안녕하세요 "+ authorReqDto.getName()+"입니다.").build());
+        author.getPosts().add(Post.builder().author(author).title("가입인사").contents("안녕하세요 "+ authorReqDto.getName()+"입니다.").appointment("N").build());
         Author savedAuthor = authorRepository.save(author);
         return savedAuthor;
 

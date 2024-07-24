@@ -33,6 +33,12 @@ public class AuthorController {
     public String authoRegisterView(){
         return "author/author_register";
     }
+
+    @GetMapping("/login-screen")
+    public String authorLoginScreen(){
+        return "author/login-screen";
+    }
+
 //rest api
 //    @PostMapping("/create")
 //    public String authorCreate(@RequestBody AuthorSaveReqDto dto){
@@ -41,9 +47,9 @@ public class AuthorController {
 //        return author.getId()+"번 회원가입 완료";
 //    }
 
-    @PostMapping("/create")
+    @PostMapping("/register")
     public String authorCreate(AuthorSaveReqDto dto){
-
+        System.out.println("회원가입 컨트롤러");
         Author author = authorService.createAuthor(dto);
         return "redirect:/author/list";
     }

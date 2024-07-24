@@ -1,6 +1,12 @@
 server:
   port: 8080
 spring:
+  session:
+    storage-type: redis
+#    추후에 session용도가 아니라면 session: storage-type:redis 삭제
+  redis:
+    host: localhost
+    port: 6379
   config:
     activate:
       on-profile: dev #이건 dev다

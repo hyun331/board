@@ -11,6 +11,7 @@ import com.beyond.board.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -41,7 +42,7 @@ public class PostService {
     //jpa가 author객체에서 author_id를 찾아 db에는 author_id가 들어감
 
     public Post postCreate(PostSaveReqDto dto){
-        Author author = authorService.authorFindByEmail(dto.getEmail());
+        Author author = authorService.authorFindByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         String appointment = null;
         LocalDateTime appointmentTime = null;
         System.out.println(dto);
@@ -88,6 +89,16 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(()->new EntityNotFoundException("post is not found"));
         post.updatePost(dto);
         postRepository.save(post);
+    }
+
+    public void delete(Long id){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Post post = postRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("post is not found"));
+        if(post.getAuthor().getEmail() != email){
+            throw new IllegalArgumentException("본인의 게시글이 아닙니다");
+        }
+        postRepository.delete(post);
+
     }
 
 

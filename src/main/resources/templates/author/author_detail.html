@@ -52,7 +52,7 @@
             </tr>
 
         </table>
-        <div>
+        <div th:if="${session.email == author.email}">
 
             <div class="float-end">
                 <a class="btn btn-primary" onclick="showUpdateForm()">

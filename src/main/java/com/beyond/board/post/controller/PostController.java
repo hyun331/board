@@ -91,4 +91,11 @@ public class PostController {
         postService.updatePost(id, dto);
         return "redirect:/post/detail/"+id;
     }
+
+    @Transactional
+    @PostMapping("/delete/{id}")
+    public String deletePost(@PathVariable Long id){
+        postService.delete(id);
+        return "redirect:/post/list";
+    }
 }
